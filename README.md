@@ -7,8 +7,8 @@ Terraform = cloud infrastructure, Kubernetes cluster, IAM, registry, Istio insta
 Kustomize = portable Kubernetes workload manifests plus per-cloud overlays.
 Application code = cloud-neutral container.
 
-Istio: 
-Istio Gateway describes ingress traffic entering the mesh, while VirtualService routes that traffic to services. This is portable across GKE, EKS, and AKS because it targets Istio and Kubernetes APIs, not cloud-specific ingress resources.
+##Istio Gateway:
+describes ingress traffic entering the mesh, while VirtualService routes that traffic to services. This is portable across GKE, EKS, and AKS because it targets Istio and Kubernetes APIs, not cloud-specific ingress resources.
 
 ##Repository layout
 
