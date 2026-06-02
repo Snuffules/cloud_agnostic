@@ -4,7 +4,9 @@ gcp, aws, azure, k8s, istio, helm, kustomize
 ##Contents:
 
 Terraform = cloud infrastructure, Kubernetes cluster, IAM, registry, Istio install.
+
 Kustomize = portable Kubernetes workload manifests plus per-cloud overlays.
+
 Application code = cloud-neutral container.
 
 ##Istio Gateway:
