@@ -9,29 +9,5 @@ Application code = cloud-neutral container.
 
 ##Repository layout
 
-repo/
-├── infra/
-│   ├── modules/
-│   │   ├── gke/
-│   │   ├── eks/
-│   │   ├── aks/
-│   │   └── istio/
-│   └── envs/
-│       ├── gcp/dev/
-│       ├── aws/dev/
-│       └── azure/dev/
-│
-└── k8s/
-    ├── base/
-    │   ├── namespace.yaml
-    │   ├── serviceaccount.yaml
-    │   ├── deployment.yaml
-    │   ├── service.yaml
-    │   ├── gateway.yaml
-    │   ├── virtualservice.yaml
-    │   └── kustomization.yaml
-    │
-    └── overlays/
-        ├── gcp/
-        ├── aws/
-        └── azure/
+<img width="409" height="678" alt="{FB3B6475-A522-40CE-A21C-FE16AEA53051}" src="https://github.com/user-attachments/assets/d3a80f21-d96a-4268-a3d2-4af014c5a484" />
+
