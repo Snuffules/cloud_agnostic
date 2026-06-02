@@ -1,34 +1,83 @@
-# cloud_agnostic
-gcp, aws, azure, k8s, istio, helm, kustomize
+# Cloud Agnostic Kubernetes Deployment
 
-##Contents:
+GCP, AWS, Azure, Kubernetes, Istio, Helm, Kustomize, and Terraform.
 
-Terraform = cloud infrastructure, Kubernetes cluster, IAM, registry, Istio install.
+## Contents
 
-Kustomize = portable Kubernetes workload manifests plus per-cloud overlays.
+This repository uses a split-responsibility model:
 
-Application code = cloud-neutral container.
+* **Terraform**: cloud infrastructure, Kubernetes clusters, IAM, container registries, and Istio installation.
+* **Kustomize**: portable Kubernetes workload manifests with per-cloud overlays.
+* **Application code**: cloud-neutral containerized workloads.
 
-##Istio Gateway:
+## Istio Gateway
 
-describes ingress traffic entering the mesh, while VirtualService routes that traffic to services. This is portable across GKE, EKS, and AKS because it targets Istio and Kubernetes APIs, not cloud-specific ingress resources.
+The Istio `Gateway` describes ingress traffic entering the mesh, while the `VirtualService` routes that traffic to services.
 
-##Decisions per cloud:
+This model is portable across GKE, EKS, and AKS because it targets Istio and Kubernetes APIs instead of cloud-specific ingress resources.
 
-GC{: GKE Workload Identity Federation lets Kubernetes workloads authenticate to Google Cloud APIs without static service account keys; the cloud-specific part belongs in the GCP overlay, not the base.
-AWS: On EKS, IAM Roles for Service Accounts use a Kubernetes service account annotation pointing to the IAM role ARN
-Azure: AKS Workload Identity uses OIDC plus Microsoft Entra Workload ID, and Azure documents service account labels and annotations such as azure.workload.identity/client-id
+## Cloud-Specific Decisions
 
-##Repository layout
+### GCP
 
-<img width="409" height="678" alt="{FB3B6475-A522-40CE-A21C-FE16AEA53051}" src="https://github.com/user-attachments/assets/d3a80f21-d96a-4268-a3d2-4af014c5a484" />
+GKE Workload Identity Federation lets Kubernetes workloads authenticate to Google Cloud APIs without static service account keys.
 
-##Installation
+The cloud-specific configuration belongs in the GCP overlay, not in the base manifests.
 
-Deployment commands
+Example:
 
-GCP:
+```text
+k8s/overlays/gcp/kustomization.yaml
+```
 
+### AWS
+
+On EKS, IAM Roles for Service Accounts use a Kubernetes service account annotation that points to the IAM role ARN.
+
+### Azure
+
+AKS Workload Identity uses OIDC with Microsoft Entra Workload ID.
+
+Azure-specific service account labels and annotations, such as `azure.workload.identity/client-id`, belong in the Azure overlay.
+
+## Repository Layout
+
+```text
+repo/
+├── infra/
+│   ├── modules/
+│   │   ├── gke/
+│   │   ├── eks/
+│   │   ├── aks/
+│   │   └── istio/
+│   └── envs/
+│       ├── gcp/dev/
+│       ├── aws/dev/
+│       └── azure/dev/
+│
+└── k8s/
+    ├── base/
+    │   ├── namespace.yaml
+    │   ├── serviceaccount.yaml
+    │   ├── deployment.yaml
+    │   ├── service.yaml
+    │   ├── gateway.yaml
+    │   ├── virtualservice.yaml
+    │   └── kustomization.yaml
+    │
+    └── overlays/
+        ├── gcp/
+        ├── aws/
+        └── azure/
+```
+
+<img width="409" height="678" alt="Repository layout" src="https://github.com/user-attachments/assets/d3a80f21-d96a-4268-a3d2-4af014c5a484" />
+
+## Installation
+
+### GCP
+
+```bash
 terraform -chdir=infra/envs/gcp/dev init
 terraform -chdir=infra/envs/gcp/dev apply
 
@@ -37,9 +86,11 @@ gcloud container clusters get-credentials CLUSTER_NAME \
   --project PROJECT_ID
 
 kubectl apply -k k8s/overlays/gcp
+```
 
-AWS:
+### AWS
 
+```bash
 terraform -chdir=infra/envs/aws/dev init
 terraform -chdir=infra/envs/aws/dev apply
 
@@ -48,9 +99,11 @@ aws eks update-kubeconfig \
   --name CLUSTER_NAME
 
 kubectl apply -k k8s/overlays/aws
+```
 
-Azure:
+### Azure
 
+```bash
 terraform -chdir=infra/envs/azure/dev init
 terraform -chdir=infra/envs/azure/dev apply
 
@@ -59,47 +112,49 @@ az aks get-credentials \
   --name CLUSTER_NAME
 
 kubectl apply -k k8s/overlays/azure
-Rule set
+```
 
-Keep these in the base:
+## Rule Set
 
-Namespace
-Deployment
-Service
-ServiceAccount without cloud annotations
-Istio Gateway
-Istio VirtualService
-ConfigMap with generic defaults
-Probes
-Resource requests and limits
-Pod security context
+### Keep These in the Base
 
-Keep these in overlays:
+* Namespace
+* Deployment
+* Service
+* ServiceAccount without cloud annotations
+* Istio Gateway
+* Istio VirtualService
+* ConfigMap with generic defaults
+* Probes
+* Resource requests and limits
+* Pod security context
 
-Container registry path
-Image tag
-Cloud workload identity annotations
-Cloud-specific storage class
-Cloud-specific load balancer annotations
-Environment-specific replica count
-Environment-specific hostnames
-Cloud-specific secret provider configuration
+### Keep These in Overlays
 
-Do not put these in the app code:
+* Container registry path
+* Image tag
+* Cloud workload identity annotations
+* Cloud-specific storage class
+* Cloud-specific load balancer annotations
+* Environment-specific replica count
+* Environment-specific hostnames
+* Cloud-specific secret provider configuration
 
-GCP service account keys
-AWS access keys
-Azure client secrets
-Cloud-specific config hardcoded into source
-Cloud-specific ingress logic
-Cloud-specific Kubernetes YAML in the base
+### Do Not Put These in Application Code
 
-The resulting model is:
+* GCP service account keys
+* AWS access keys
+* Azure client secrets
+* Cloud-specific config hardcoded into source
+* Cloud-specific ingress logic
+* Cloud-specific Kubernetes YAML in the base
 
-Same container image pattern
-Same Kubernetes base
-Same Istio traffic model
-Different Terraform module per cloud
-Different Kustomize overlay per cloud
+## Resulting Model
+
+* Same container image pattern
+* Same Kubernetes base
+* Same Istio traffic model
+* Different Terraform module per cloud
+* Different Kustomize overlay per cloud
 
 This keeps the workload portable while accepting that infrastructure provisioning itself is necessarily cloud-specific.
