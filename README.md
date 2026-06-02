@@ -71,8 +71,6 @@ repo/
         └── azure/
 ```
 
-<img width="409" height="678" alt="Repository layout" src="https://github.com/user-attachments/assets/d3a80f21-d96a-4268-a3d2-4af014c5a484" />
-
 ## Installation
 
 ### GCP
