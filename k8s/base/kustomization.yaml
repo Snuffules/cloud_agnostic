@@ -1,0 +1,21 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - namespace.yaml
+  - serviceaccount.yaml
+  - deployment.yaml
+  - service.yaml
+  - gateway.yaml
+  - virtualservice.yaml
+
+configMapGenerator:
+  - name: cloud-config
+    namespace: myapp
+    literals:
+      - CLOUD_PROVIDER=generic
+
+images:
+  - name: app-image
+    newName: app-image
+    newTag: latest
