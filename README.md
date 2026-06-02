@@ -9,7 +9,8 @@ Kustomize = portable Kubernetes workload manifests plus per-cloud overlays.
 
 Application code = cloud-neutral container.
 
-##Istio Gateway:##
+##Istio Gateway:
+
 describes ingress traffic entering the mesh, while VirtualService routes that traffic to services. This is portable across GKE, EKS, and AKS because it targets Istio and Kubernetes APIs, not cloud-specific ingress resources.
 
 ##Repository layout
