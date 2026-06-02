@@ -1,0 +1,22 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base
+
+nameSuffix: -gcp
+
+images:
+  - name: app-image
+    newName: us-docker.pkg.dev/PROJECT_ID/myapp/myapp
+    newTag: v1.0.0
+
+configMapGenerator:
+  - name: cloud-config
+    namespace: myapp
+    behavior: replace
+    literals:
+      - CLOUD_PROVIDER=gcp
+
+patches:
+  - path: serviceaccount-patch.yaml
